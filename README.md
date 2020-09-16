@@ -64,8 +64,17 @@ dg.gen_src_from_csv()
 
 ## Generated Python Source Code
 
-```python
+- Install the prerequisites numpy, pandas and faker (Python 3.7)
 
+```
+> pip install numpy
+> pip install pandas
+> pip install faker
+```
+
+- Generated Python Source Code
+
+```python
 import pandas as pd
 
 import numpy as np
