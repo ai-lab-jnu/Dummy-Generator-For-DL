@@ -62,6 +62,40 @@ dg.gen_src_from_csv()
 ```
 
 
+```python
+
+# With Custom Field Callback Handler
+def custom_field_handler(dg, fgen, column, dataset):
+    """
+    Custom Field Callback Handler
+
+    :param dg:      DLDummyGenerator Instance
+    :param fgen:    Source File Writter
+    :param column:  Pandas DataFrame column name
+    :param dataset: Pandas DataFrame
+    :return:
+    """
+    fgen.write('gen_df[\"' + column + '\"] = choice([\"')
+    fgen.write('\", \"'.join(['Y', 'N']))
+    fgen.write('\"], GEN_ROW_MAX)\n\n')
+
+...
+
+
+dg = DLDummyGenerator(CSV_FILE_NAME, GEN_ROW_MAX, UNIQUE_FIELD_COUNT, DATE_FIELDS)
+
+# Definition to custom field handler
+# [Field Name, Callback Handler]
+CUSTOM_FIELDS = [
+    [' Outcome', custom_field_handler]
+]
+dg.set_custom_fields(CUSTOM_FIELDS)
+
+# Run to Generate python source code
+dg.gen_src_from_csv()
+```
+
+
 ## Generated Python Source Code
 
 - Install the prerequisites numpy, pandas and faker (Python 3.7)
