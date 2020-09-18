@@ -36,6 +36,8 @@
 
 ## Usage
 
+- Simple Code
+
 ```python
 
 # Original csv File (Real Data)
@@ -47,27 +49,36 @@ GEN_ROW_MAX = 10
 # Length of Unique String Field (eg, Code Value) Judgment criteria
 UNIQUE_FIELD_COUNT = 1000
 
-# Definition to generate random date/time
-# [Field Name, Start Date, End Date, Input Date Format, Output Date Format]
-DATE_FIELDS = [
-    ['Pregnancies', '2019-01-01', '2019-12-31', '%Y-%m-%d', '%Y%m%d']
-    , [' Glucose', '2019-01', '2019-12', '%Y-%m', '%Y%m']
-]
 
-
-dg = DLDummyGenerator(CSV_FILE_NAME, GEN_ROW_MAX, UNIQUE_FIELD_COUNT, DATE_FIELDS)
+dg = DLDummyGenerator(CSV_FILE_NAME, GEN_ROW_MAX, UNIQUE_FIELD_COUNT)
 
 # Run to Generate python source code
 dg.gen_src_from_csv()
+
 ```
 
 
+- With Custom Field Callback Handler Code
+
 ```python
 
-# With Custom Field Callback Handler
+def auto_increment_field_handler(dg, fgen, column, dataset):
+    """
+    Custom Field Callback Handler (Auto Increment ID)
+
+    :param dg:
+    :param fgen:
+    :param column:
+    :param dataset:
+    :return:
+    """
+    fgen.write('gen_df[\"' + column + '\"] = ')
+    fgen.write('[\'ID{:05d}\'.format(idx+1) for idx in range(GEN_ROW_MAX)]\n\n')
+
+
 def custom_field_handler(dg, fgen, column, dataset):
     """
-    Custom Field Callback Handler
+    Custom Field Callback Handler (Choice String)
 
     :param dg:      DLDummyGenerator Instance
     :param fgen:    Source File Writter
@@ -82,17 +93,28 @@ def custom_field_handler(dg, fgen, column, dataset):
 ...
 
 
-dg = DLDummyGenerator(CSV_FILE_NAME, GEN_ROW_MAX, UNIQUE_FIELD_COUNT, DATE_FIELDS)
+dg = DLDummyGenerator(CSV_FILE_NAME, GEN_ROW_MAX, UNIQUE_FIELD_COUNT)
 
-# Definition to custom field handler
-# [Field Name, Callback Handler]
-CUSTOM_FIELDS = [
-    [' Outcome', custom_field_handler]
-]
-dg.set_custom_fields(CUSTOM_FIELDS)
+    dg = DLDummyGenerator(CSV_FILE_NAME, GEN_ROW_MAX, UNIQUE_FIELD_COUNT)
 
-# Run to Generate python source code
-dg.gen_src_from_csv()
+    # Definition to generate random date/time
+    # [[Field Name, Start Date, End Date, Input Date Format, Output Date Format]]
+    DATE_FIELDS = [
+        [' Glucose', '2019-01', '2019-12', '%Y-%m', '%Y%m']
+    ]
+    dg.set_date_fields(DATE_FIELDS)
+
+    # Definition to custom field handler
+    # [[Field Name, Callback Handler]]
+    CUSTOM_FIELDS = [
+        ['Pregnancies', auto_increment_field_handler]
+        , [' Outcome', custom_field_handler]
+    ]
+    dg.set_custom_fields(CUSTOM_FIELDS)
+
+    # Run to Generate python source code
+    dg.gen_src_from_csv()
+
 ```
 
 
@@ -120,10 +142,7 @@ from datetime import datetime
 gen_df = pd.DataFrame()
 
 # Pregnancies
-gen_df["Pregnancies"] = [fake.date_between(
-    start_date=datetime.strptime('2019-01-01', '%Y-%m-%d')
-    , end_date=datetime.strptime('2019-12-31', '%Y-%m-%d')).strftime('%Y%m%d')
-    for _ in range(GEN_ROW_MAX)]
+gen_df["Pregnancies"] = ['ID{:05d}'.format(idx+1) for idx in range(GEN_ROW_MAX)]
 
 #  Glucose
 gen_df[" Glucose"] = [fake.date_between(
@@ -131,10 +150,14 @@ gen_df[" Glucose"] = [fake.date_between(
     , end_date=datetime.strptime('2019-12', '%Y-%m')).strftime('%Y%m')
     for _ in range(GEN_ROW_MAX)]
 
-#  BloodPressure
-gen_df[" BloodPressure"] = random.randint(0, 122 + 1, GEN_ROW_MAX, dtype="int64")
-
 ...
+
+#  Age
+gen_df[" Age"] = random.randint(21, 81 + 1, GEN_ROW_MAX, dtype="int64")
+
+#  Outcome
+gen_df[" Outcome"] = choice(["Y", "N"], GEN_ROW_MAX)
+
 
 gen_df.to_csv('gen_pima-indians-diabetes.csv', index=False)
 
