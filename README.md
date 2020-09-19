@@ -86,9 +86,8 @@ def custom_field_handler(dg, fgen, column, dataset):
     :param dataset: Pandas DataFrame
     :return:
     """
-    fgen.write('gen_df[\"' + column + '\"] = choice([\"')
-    fgen.write('\", \"'.join(['Y', 'N']))
-    fgen.write('\"], GEN_ROW_MAX)\n\n')
+    fgen.write('gen_df[\"' + column + '\"] = ')
+    fgen.write('choice([\"' + '\", \"'.join(['Y', 'N']) + '\"], GEN_ROW_MAX)\n\n')
 
 ...
 
