@@ -50,7 +50,10 @@ GEN_ROW_MAX = 10
 UNIQUE_FIELD_COUNT = 1000
 
 
-dg = DLDummyGenerator(CSV_FILE_NAME, GEN_ROW_MAX, UNIQUE_FIELD_COUNT)
+# Create Logging Object
+logger = DLLogger()
+
+dg = DLDummyGenerator(CSV_FILE_NAME, GEN_ROW_MAX, UNIQUE_FIELD_COUNT, logger=logger)
 
 # Run to Generate python source code
 dg.gen_src_from_csv()
@@ -62,57 +65,60 @@ dg.gen_src_from_csv()
 
 ```python
 
-def auto_increment_field_handler(dg, fgen, column, dataset):
+class DLDummyFieldAutoIncrement(DLDummyFieldHandler):
     """
-    Custom Field Callback Handler (Auto Increment ID)
+    Auto Increment ID - Custom Field Callback Handler
+    """
 
-    :param dg:
-    :param fgen:
-    :param column:
-    :param dataset:
-    :return:
-    """
-    fgen.write('gen_df[\"' + column + '\"] = ')
-    fgen.write('[\'ID{:05d}\'.format(idx+1) for idx in range(GEN_ROW_MAX)]\n\n')
+    def on_custom_field(self, dg, fgen, column, dataset):
+        fgen.write('gen_df[\"' + column + '\"] = ')
+        fgen.write('[\'ID{:05d}\'.format(idx+1) for idx in range(GEN_ROW_MAX)]\n\n')
 
 
-def custom_field_handler(dg, fgen, column, dataset):
+class DLDummyFieldChoiceString(DLDummyFieldHandler):
     """
-    Custom Field Callback Handler (Choice String)
+    Choice String - Custom Field Callback Handler
+    """
 
-    :param dg:      DLDummyGenerator Instance
-    :param fgen:    Source File Writter
-    :param column:  Pandas DataFrame column name
-    :param dataset: Pandas DataFrame
-    :return:
-    """
-    fgen.write('gen_df[\"' + column + '\"] = ')
-    fgen.write('choice([\"' + '\", \"'.join(['Y', 'N']) + '\"], GEN_ROW_MAX)\n\n')
+    def on_custom_field(self, dg, fgen, column, dataset):
+        fgen.write('gen_df[\"' + column + '\"] = ')
+        fgen.write('choice([\"' + '\", \"'.join(['Y', 'N']) + '\"], GEN_ROW_MAX)\n\n')
 
 ...
 
+# Original csv File (Real Data)
+CSV_FILE_NAME = "pima-indians-diabetes.csv"
 
-dg = DLDummyGenerator(CSV_FILE_NAME, GEN_ROW_MAX, UNIQUE_FIELD_COUNT)
+# Maximum length of data to be generated
+GEN_ROW_MAX = 10
 
-    dg = DLDummyGenerator(CSV_FILE_NAME, GEN_ROW_MAX, UNIQUE_FIELD_COUNT)
+# Length of Unique String Field (eg, Code Value) Judgment criteria
+UNIQUE_FIELD_COUNT = 1000
 
-    # Definition to generate random date/time
-    # [[Field Name, Start Date, End Date, Input Date Format, Output Date Format]]
-    DATE_FIELDS = [
-        [' Glucose', '2019-01', '2019-12', '%Y-%m', '%Y%m']
-    ]
-    dg.set_date_fields(DATE_FIELDS)
 
-    # Definition to custom field handler
-    # [[Field Name, Callback Handler]]
-    CUSTOM_FIELDS = [
-        ['Pregnancies', auto_increment_field_handler]
-        , [' Outcome', custom_field_handler]
-    ]
-    dg.set_custom_fields(CUSTOM_FIELDS)
+# Create Logging Object
+logger = DLLogger()
 
-    # Run to Generate python source code
-    dg.gen_src_from_csv()
+dg = DLDummyGenerator(CSV_FILE_NAME, GEN_ROW_MAX, UNIQUE_FIELD_COUNT, logger=logger)
+
+
+# Definition to generate random date/time
+# [[Field Name, Start Date, End Date, Input Date Format, Output Date Format]]
+DATE_FIELDS = [
+    [' Glucose', '2019-01', '2019-12', '%Y-%m', '%Y%m']
+]
+dg.set_date_fields(DATE_FIELDS)
+
+# Definition to custom field handler
+# [[Field Name, DLDummyFieldHandler class implement instance]]
+CUSTOM_FIELDS = [
+    ['Pregnancies', DLDummyFieldAutoIncrement()]
+    , [' Outcome', DLDummyFieldChoiceString()]
+]
+dg.set_custom_fields(CUSTOM_FIELDS)
+
+# Run to Generate python source code
+dg.gen_src_from_csv()
 
 ```
 
