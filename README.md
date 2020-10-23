@@ -1,6 +1,12 @@
 
 # 딥러닝용 더미 데이터 생성 자동화
 
+- Deep-Learning Dummy Data File Generator by csv File 
+
+
+---
+
+
 ## Overview
 
 외부 노출에 민감한 자료가 포함된 데이터는 개인 정보 보호법에 의하여 망분리 PC (인터넷이 차단된 PC) 에서 관리된다
@@ -10,9 +16,15 @@
 딥러닝을 효율적으로 수행하기 위해서는 성능 좋은 PC 에서 실제 데이터를 사용하는 것이나 현실적으로 그렇지 못한 상황일 경우 더미 데이터를 사용해야 한다
 
 
+---
+
+
 ## 망 분리 PC 의 한계점에 따른 더미 데이터 사용
 
 ![](img/readme-01.png)
+
+
+---
 
 
 ## 실제 데이터에서 더미 데이터를 만드는 과정
@@ -29,34 +41,51 @@
     - 수치, 문자열 (코드형 / 랜덤 문자열), 날짜형의 랜덤 생성 코드를 작성한다
 
 
+---
+
+
 ## 더미 데이터 생성 자동화 소개
 
 ![](img/readme-02.png)
 
 
+---
+
+
 ## Usage
 
-- Simple Code
+- Install the prerequisites DLDummyGen
+
+```
+> pip install DLDummyGen
+```
+
+
+- Sample Code
 
 ```python
 
-# Original csv File (Real Data)
-CSV_FILE_NAME = "pima-indians-diabetes.csv"
+from DLDummyGen.DLDummyGen import DLLogger, DLDummyFieldHandler, DLDummyGenerator
 
-# Maximum length of data to be generated
-GEN_ROW_MAX = 10
+if __name__ == '__main__':
 
-# Length of Unique String Field (eg, Code Value) Judgment criteria
-UNIQUE_FIELD_COUNT = 1000
-
-
-# Create Logging Object
-logger = DLLogger()
-
-dg = DLDummyGenerator(CSV_FILE_NAME, GEN_ROW_MAX, UNIQUE_FIELD_COUNT, logger=logger)
-
-# Run to Generate python source code
-dg.gen_src_from_csv()
+    # Original csv File (Real Data)
+    CSV_FILE_NAME = "pima-indians-diabetes.csv"
+    
+    # Maximum length of data to be generated
+    GEN_ROW_MAX = 10
+    
+    # Length of Unique String Field (eg, Code Value) Judgment criteria
+    UNIQUE_FIELD_COUNT = 1000
+    
+    
+    # Create Logging Object
+    logger = DLLogger()
+    
+    dg = DLDummyGenerator(CSV_FILE_NAME, GEN_ROW_MAX, UNIQUE_FIELD_COUNT, logger=logger)
+    
+    # Run to Generate python source code
+    dg.gen_src_from_csv()
 
 ```
 
@@ -64,6 +93,8 @@ dg.gen_src_from_csv()
 - With Custom Field Callback Handler Code
 
 ```python
+
+from DLDummyGen.DLDummyGen import DLLogger, DLDummyFieldHandler, DLDummyGenerator
 
 class DLDummyFieldAutoIncrement(DLDummyFieldHandler):
     """
@@ -86,41 +117,46 @@ class DLDummyFieldChoiceString(DLDummyFieldHandler):
 
 ...
 
-# Original csv File (Real Data)
-CSV_FILE_NAME = "pima-indians-diabetes.csv"
+if __name__ == '__main__':
 
-# Maximum length of data to be generated
-GEN_ROW_MAX = 10
-
-# Length of Unique String Field (eg, Code Value) Judgment criteria
-UNIQUE_FIELD_COUNT = 1000
-
-
-# Create Logging Object
-logger = DLLogger()
-
-dg = DLDummyGenerator(CSV_FILE_NAME, GEN_ROW_MAX, UNIQUE_FIELD_COUNT, logger=logger)
-
-
-# Definition to generate random date/time
-# [[Field Name, Start Date, End Date, Input Date Format, Output Date Format]]
-DATE_FIELDS = [
-    [' Glucose', '2019-01', '2019-12', '%Y-%m', '%Y%m']
-]
-dg.set_date_fields(DATE_FIELDS)
-
-# Definition to custom field handler
-# [[Field Name, DLDummyFieldHandler class implement instance]]
-CUSTOM_FIELDS = [
-    ['Pregnancies', DLDummyFieldAutoIncrement()]
-    , [' Outcome', DLDummyFieldChoiceString()]
-]
-dg.set_custom_fields(CUSTOM_FIELDS)
-
-# Run to Generate python source code
-dg.gen_src_from_csv()
+    # Original csv File (Real Data)
+    CSV_FILE_NAME = "pima-indians-diabetes.csv"
+    
+    # Maximum length of data to be generated
+    GEN_ROW_MAX = 10
+    
+    # Length of Unique String Field (eg, Code Value) Judgment criteria
+    UNIQUE_FIELD_COUNT = 1000
+    
+    
+    # Create Logging Object
+    logger = DLLogger()
+    
+    dg = DLDummyGenerator(CSV_FILE_NAME, GEN_ROW_MAX, UNIQUE_FIELD_COUNT, logger=logger)
+    
+    
+    # Definition to generate random date/time
+    # [[Field Name, Start Date, End Date, Input Date Format, Output Date Format]]
+    DATE_FIELDS = [
+        [' Glucose', '2019-01', '2019-12', '%Y-%m', '%Y%m']
+    ]
+    dg.set_date_fields(DATE_FIELDS)
+    
+    # Definition to custom field handler
+    # [[Field Name, DLDummyFieldHandler class implement instance]]
+    CUSTOM_FIELDS = [
+        ['Pregnancies', DLDummyFieldAutoIncrement()]
+        , [' Outcome', DLDummyFieldChoiceString()]
+    ]
+    dg.set_custom_fields(CUSTOM_FIELDS)
+    
+    # Run to Generate python source code
+    dg.gen_src_from_csv()
 
 ```
+
+
+---
 
 
 ## Generated Python Source Code
@@ -169,6 +205,9 @@ gen_df.to_csv('gen_pima-indians-diabetes.csv', index=False)
 print('\ngen_pima-indians-diabetes.csv File Created...\n')
 
 ```
+
+---
+
 
 ## Appendix
 
