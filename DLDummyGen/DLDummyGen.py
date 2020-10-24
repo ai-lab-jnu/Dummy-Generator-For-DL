@@ -119,13 +119,12 @@ class DLDummyGenerator(DLDummyGenerator):
         :param unique_field_count (int):    유니크한 문자열 (예를 들어서 코드 값) 필드로 뽑아낼 기준의 크기.
         :param logger (Logger):     로그를 출력할 Logger 객체
         """
-
+        super().__init__(logger=logger)
         self.csv_file_name = csv_file_name
         self.gen_row_len = gen_row_len
         self.unique_field_count = unique_field_count
         self.date_fields = [['', None]]
         self.custom_fields = [['', None]]
-        self.logger = logger
 
     def get_csv_file_name(self):
         return self.csv_file_name
@@ -199,12 +198,6 @@ class DLDummyGenerator(DLDummyGenerator):
             dg.set_custom_fields(CUSTOM_FIELDS)
         """
         self.custom_fields = custom_fields
-
-    def get_logger(self):
-        return self.logger
-
-    def set_logger(self, logger):
-        self.logger = logger
 
 
 class DLDummyGenerator(DLDummyGenerator):
@@ -363,26 +356,24 @@ class DLDummyGenerator(DLDummyGenerator):
         생성할 소스 파일은 이 csv 데이터 파일의 스키마를 재구조화하고 데이터의 min() / max() 값들로 더미 데이터를 만드는 작업을 수행한다
         """
 
-        logger = self.logger
-
-        logger.d('\nLoading ' + self.csv_file_name + '...\n')
+        self.d('\nLoading ' + self.csv_file_name + '...\n')
 
         csv_file_stat = os.stat(self.csv_file_name)
-        logger.d('# Original ' + self.csv_file_name + ' File Size = ' + str(csv_file_stat.st_size) + '\n')
+        self.d('# Original ' + self.csv_file_name + ' File Size = ' + str(csv_file_stat.st_size) + '\n')
 
         pd.set_option('display.max_columns', 999)
         
         # 원본 csv 파일 읽기
         dataset = pd.read_csv(self.csv_file_name, encoding='euc-kr')
-        logger.d(dataset)
+        self.d(dataset)
 
-        logger.d('\nLoad ' + self.csv_file_name + ' Complete.\n')
+        self.d('\nLoad ' + self.csv_file_name + ' Complete.\n')
 
 
         # 소스 파일 만들기 시작
         gen_src_file_name, _ = os.path.splitext(self.csv_file_name)
         gen_src_file_name = 'gen_' + gen_src_file_name + '.py'
-        logger.d('Create ' + gen_src_file_name + ' File...\n')
+        self.d('Create ' + gen_src_file_name + ' File...\n')
 
         fgen = open(gen_src_file_name, 'w', encoding='utf-8')
 
@@ -394,12 +385,12 @@ class DLDummyGenerator(DLDummyGenerator):
         fgen.write('# Original ' + self.csv_file_name + ' File Size = ' + str(csv_file_stat.st_size) + '\n')
         fgen.write('\n\n')
 
-        logger.d('Writing ' + self.csv_file_name + ' Meta Info...\n')
+        self.d('Writing ' + self.csv_file_name + ' Meta Info...\n')
 
         # 컬럼별 메타 정보를 소스 코드의 주석으로 저장
         self._gen_src_meta_info(fgen, dataset)
 
-        logger.d('Writing ' + gen_src_file_name + ' Source Code...\n')
+        self.d('Writing ' + gen_src_file_name + ' Source Code...\n')
 
         fgen.write('import pandas as pd\n')
         fgen.write('\n')
@@ -427,6 +418,6 @@ class DLDummyGenerator(DLDummyGenerator):
         fgen.write('\nprint(\'\\ngen_' + self.csv_file_name + ' File Created...\\n\')\n\n')
         fgen.close()
 
-        print('\n' + gen_src_file_name + ' File Created...\n')
+        self.d('\n' + gen_src_file_name + ' File Created...\n')
 
 
