@@ -1,52 +1,16 @@
 
-# 딥러닝용 더미 데이터 생성 자동화
-
-- Deep-Learning Dummy Data File Generator by csv File 
-
+# Deep-Learning Dummy Data File Generator from csv File
 
 ---
 
 
 ## Overview
 
-외부 노출에 민감한 자료가 포함된 데이터는 개인 정보 보호법에 의하여 망분리 PC (인터넷이 차단된 PC) 에서 관리된다
+- Load csv File
+- Meta Information Parsing From csv File
+- Generate to Python Source File
+- Run Generated Python Source File When Create Dummy Data File for Deep-Learning
 
-대부분의 망분리 PC 는 터미널의 역할만 하고 성능이 떨어지는 미니 PC 를 사용하게 된다
-
-딥러닝을 효율적으로 수행하기 위해서는 성능 좋은 PC 에서 실제 데이터를 사용하는 것이나 현실적으로 그렇지 못한 상황일 경우 더미 데이터를 사용해야 한다
-
-
----
-
-
-## 망 분리 PC 의 한계점에 따른 더미 데이터 사용
-
-![](img/readme-01.png)
-
-
----
-
-
-## 실제 데이터에서 더미 데이터를 만드는 과정
-
-- 망분리 PC 에서 데이터 특성을 파악한다
-- 더미 데이터를 만들기 위해서 실제 데이터의 특성을 발췌한다
-    - 실제 데이터의 스키마 구조를 발췌한다.<br/>
-    (이때 망분리 PC 는 클립보드 복사나 파일 복사가 어렵기 때문에 수기로 작성하게 된다)
-    - 실제 데이터에서 각 필드별 최대값, 최소 값 등도 발췌한다
-    - 날짜형의 경우 범위를 확인하여 발췌해야 한다
-    - 코드 값 같은 문자열 상수는 발췌하기 어렵다
-- 발췌한 특성 정보를 바탕으로 더미 데이터를 생성하기 위한 코드를 작성한다
-    - 각 필드별 특성을 작성한다
-    - 수치, 문자열 (코드형 / 랜덤 문자열), 날짜형의 랜덤 생성 코드를 작성한다
-
-
----
-
-
-## 더미 데이터 생성 자동화 소개
-
-![](img/readme-02.png)
 
 
 ---
